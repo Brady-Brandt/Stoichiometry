@@ -1,4 +1,6 @@
 from chempy import chemistry
+from chempy.util import periodic 
+from chempy.util import parsing
 
 #parse our text file for chemical equations
 #return an array of chemical equations
@@ -13,6 +15,20 @@ def parse_equations():
            chemical_equations_arr.append(ChemicalEquation(reactants, products))
         return chemical_equations_arr
             
+
+def calculate_molar_mass(comp):
+    parsed_compound = parsing.formula_to_composition(comp)
+    return round(periodic.mass_from_composition(parsed_compound), 4)
+
+    
+#takes in a string of a compound
+#takes in an float amount of grams
+#returns amount of moles 
+def grams_to_moles(comp, grams):
+    return grams / calculate_molar_mass(comp)
+
+def moles_to_grams(comp, moles):
+    return calculate_molar_mass(comp) * moles
 
 class ChemicalEquation:
     def __init__(self, reactants, prod):
@@ -38,4 +54,8 @@ class ChemicalEquation:
             print(str(self.bal_prod[prod]) + prod, end=" ")
 
         print("\n")
+
+    
+
+
 
