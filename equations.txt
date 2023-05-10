@@ -1,0 +1,52 @@
+N2O3 + H2O -> HNO2
+SiO2 + Na2CO3 -> Na2SiO3 + CO2
+BaO2 + H2SO4 -> BaSO4 + H2O2
+Na2Cr2O7 + S -> Cr2O3 + Na2SO4
+Ca(OH)2 + CO2 -> CaCO3 + H2O
+HAsO2 -> As2O3 + H2O
+UO3 + H2 -> UO2 + H2O
+CdSO4 + H2S -> CdS + H2SO4
+HIO3 -> I2O5 + H2O
+Fe2O3 + SiO2 -> Fe2Si2O7
+CO2 + NH3 + H2O -> NH4HCO3
+Na2O + H2O -> NaOH
+NH4NO3 -> N2O + H2O
+Mg(OH)2 -> (MgOH)2O + H2O
+HAsO3 -> As2O5 + H2O
+KHSO4 -> K2S2O7 + H2O
+H3PO4 -> H4P2O7 + H2O
+NaCl + NH4HCO3 -> NaHCO3 + NH4Cl
+NaH2PO4 -> NaPO3 + H2O
+H2CO3 -> H2O + CO2
+BaSO4 + H2SO4 -> Ba(HSO4)2
+CaCO3 -> CaO + CO2
+CaC2 + N2 -> CaCN2 + C
+Ca(OH)2 + CO2 -> Ca(HCO3)2
+Ca(HCO3)2 -> CaCO3 + CO2 + H2O
+FeS + H2SO4 -> H2S + FeSO4
+(NH4)2SO4 + CaCO3 -> (NH4)2CO3 + CaSO4
+Hg2CO3 -> Hg + HgO + CO2
+CaSO4 -> CaS + O2
+BeF2 + Mg -> MgF2 + Be
+Mg + N2 -> Mg3N2
+SiO2 + Ca(OH)2 -> CaSiO3 + H2O
+K2O + H2O -> KOH
+C + H2O -> CO + H2
+N2O5 + H2O -> HNO3
+CaS + H2O -> Ca(OH)2 + H2S
+H2SO3 -> H2O + SO2
+H3PO4 + Ca(OH)2 -> CaHPO4.2H2O
+NaPO3 + CuO -> NaCuPO4
+SO3 + H2O -> H2SO4
+Be(OH)2 -> BeO + H2O
+BaO + H2O -> Ba(OH)2
+Na2SO3 + S -> Na2S2O3
+SO2 + H2O -> H2SO3
+Li2O + H2O -> LiOH
+Na2HPO4 -> Na4P2O7 + H2O
+H4As2O7 -> As2O5 + H2O
+Al(OH)3 + NaOH -> NaAlO2 + H2O
+(CuOH)2CO3 -> CuO + CO2 + H2O
+CaO + H2O -> Ca(OH)2
+
+
