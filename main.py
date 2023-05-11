@@ -1,7 +1,6 @@
 import tkinter as tk
-import equation
-
-equations = equation.parse_equations()
+from equation import *
+from practice import *
 
 
 class Root:
@@ -10,7 +9,10 @@ class Root:
         self.WIDTH = WIDTH
         self.HEIGHT = HEIGHT
         self.menu_widgets = []
-
+        
+        self.practice_session = Practice(self.screen, self.WIDTH, self.HEIGHT)
+        self.GRAMS = "grams"
+        self.MOLES = "moles"
     def show_main_menu(self):
         #main menu 
         title = tk.Label(text = "Stoichiometry Interactive Guide")
@@ -31,7 +33,8 @@ class Root:
         for widget in self.menu_widgets:
             widget.place_forget()
 
-
+        self.practice_session.setup_problem()
+        
 
 
 
@@ -42,10 +45,9 @@ HEIGHT = 800
 screen = tk.Tk()
 screen.geometry("800x800")
 screen.title("Stoichiometry")
-
+screen["bg"] = "white"
 root = Root(screen, WIDTH, HEIGHT)
 root.show_main_menu()
-
 
 
 
