@@ -35,7 +35,6 @@ C + H2O = CO + H2
 N2O5 + H2O = HNO3
 CaS + H2O = Ca(OH)2 + H2S
 H2SO3 = H2O + SO2
-H3PO4 + Ca(OH)2 = CaHPO4.2H2O
 NaPO3 + CuO = NaCuPO4
 SO3 + H2O = H2SO4
 Be(OH)2 = BeO + H2O
