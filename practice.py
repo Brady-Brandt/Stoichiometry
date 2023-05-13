@@ -14,11 +14,13 @@ class Practice:
         self.equations = parse_equations()
         #holds all the entry widgets to enter
         # for balanced equations
-        self.balance_entries = []
+        self.balance_entries = {}
         self.compound_labels = []
-        self.molar_mass_entries = []
-        self.molar_ratio_entries = []
-        self.molar_mass_multiply_entries = []
+        self.molar_ratio_entries = [0,0]
+        #holds the element or ion as the key and its entry as the value
+        self.molar_mass_entries = {}
+        #holds the element or ion as the key and its entry as the value
+        self.molar_mass_multiply_entries = {}
         self.equation = None
         # used for displaying equation
         self.col = 0
@@ -39,28 +41,37 @@ class Practice:
         self.molar_mass = 0
         self.moles = 0
         self.molar_ratio = 0
-        self.elements = None
+        # holds a dictionary  of elements for a certain compound
+        self.elements = {}
+        # holds a dictionary of elements and the molar mass the user has inputted
+        self.user_inputted_mass = {}
 
     def check_mass(self, args):
-        for block in self.molar_mass_entries:
-            if block[0].get() != "":
-                molar_mass = float(block[0].get())
+        for element in self.molar_mass_entries:
+            entry = self.molar_mass_entries[element]
+            inputted_molar_mass = entry.get()
+            if inputted_molar_mass != "":
+                molar_mass = float(inputted_molar_mass)
                 # checks if the molar mass inputted is correct
-                if percent_error(molar_mass, calculate_molar_mass(block[1])):
-                        block[0].configure(state='disabled')
+                if percent_error(molar_mass, calculate_molar_mass(element)):
+                    self.user_inputted_mass[element] = molar_mass
+                    self.molar_mass_multiply_entries[element].configure(state='normal')
+                    entry.configure(state='disabled')
                 else:
-                    block[0].configure(bg='red')
+                    entry.configure(bg='red')
 
     def check_multiply_mass(self, args):
-        for block in self.molar_mass_multiply_entries:
-            if block[0].get() != "":
-                product = float(block[0].get())
-                # get the molar mass inputted by user
-                expected_prod = self.elements[block[1]]
-                if percent_error(product, calculate_molar_mass * expected_prod) < 5:
-                        block[0].configure(state='disabled')
+        for element in self.molar_mass_multiply_entries:
+            entry = self.molar_mass_multiply_entries[element]
+            inputted_total_mass = entry.get()
+            if inputted_total_mass != "":
+                product = float(inputted_total_mass)
+                # get the molar mass inputted by user times the number of particles  
+                expected_prod = self.elements[element] * self.user_inputted_mass[element]
+                if percent_error(product, expected_prod) < 5:
+                    entry.configure(state='disabled')
                 else:
-                    block[0].configure(bg='red')
+                    entry.configure(bg='red')
 
 
 
@@ -70,6 +81,7 @@ class Practice:
         molar_mass_dir_lb = tk.Label(self.screen, bg='white', text=f"Calculate the Molar Mass of {format_comp}", font=('Helvetica', 25))
         molar_mass_tip_lb = tk.Label(self.screen, bg='white', text="Look at a periodic table to find the atomic mass of each of the following elements. \n Multiply the atomic mass by the subscript that follows that element \n Add each of the products together to get the total molar mass", font=('Helvetica', 12))
 
+        
         molar_mass_dir_lb.pack()
         molar_mass_tip_lb.pack()
         row = 0
@@ -79,7 +91,10 @@ class Practice:
             entry = tk.Entry(molar_mass_frame,width=8, bg='white',  font=('Helvetica', 25))
             label = tk.Label(molar_mass_frame, bg='white', text=elem, font=('Helvetica', 25))
             sub_label = tk.Label(molar_mass_frame, bg='white', text=f" X {self.elements[elem]} = ", font=('Helvetica', 25))
-            multiply_entry = tk.Entry(molar_mass_frame, width=8, bg='white', font=('Helvetica', 25))
+
+            #holds the molar mass times the amount of particles of that element
+            # disabled until the user inputs the correct molar mass for that particle
+            multiply_entry = tk.Entry(molar_mass_frame, state='disabled', width=8, bg='white', font=('Helvetica', 25))
             label.grid(row=row, column=1)
             entry.grid(row=row, column=2)
             sub_label.grid(row=row, column=3)
@@ -88,8 +103,8 @@ class Practice:
             row += 1
             multiply_entry.focus()
             entry.focus()
-            self.molar_mass_multiply_entries.append([multiply_entry, elem])
-            self.molar_mass_entries.append([entry, elem])
+            self.molar_mass_multiply_entries[elem] = multiply_entry
+            self.molar_mass_entries[elem] = entry
             multiply_entry.bind("<Return>", self.check_multiply_mass)
             entry.bind("<Return>", self.check_mass)
            
@@ -100,26 +115,21 @@ class Practice:
         # gets a tuple of the ratio
         ratio = self.equation.get_molar_ratio(self.second_compound, self.first_compound)
         count = 0
-        if self.molar_ratio_entries[0].get() != "":
-            coeff = int(self.molar_ratio_entries[0].get())
-            if coeff == ratio[0]:
-                self.molar_ratio_entries[0].configure(state='disabled')
-                count += 1
-            else: 
-                self.molar_ratio_entries[0].configure(bg='red')
+        for index, entry in enumerate(self.molar_ratio_entries):
+            inputted_coeff = entry.get()
+            if inputted_coeff != "":
+                coeff = int(inputted_coeff)
+                if coeff == ratio[index]:
+                    entry.configure(state='disabled')
+                    count += 1
+                else: 
+                    entry.configure(bg='red')
 
-        if self.molar_ratio_entries[1].get() != "":
-            coeff = int(self.molar_ratio_entries[1].get())
-            if coeff == ratio[1]:
-                self.molar_ratio_entries[1].configure(state='disabled')
-                count += 1
-            else: 
-                self.molar_ratio_entries[1].configure(bg='red')
         if count == 2:
             molar_ratio = Fraction(ratio[0], ratio[1])
             mr_num = molar_ratio.numerator
             mr_den = molar_ratio.denominator
-            molar_ratio_lb = tk.Label(self.screen, bg='white', text=f"Molar Ratio: {mr_num}/{mr_den}", font=('Helvetica', 40))
+            molar_ratio_lb = tk.Label(self.screen, bg='white', text=f"Molar Ratio: {mr_num}/{mr_den}", font=('Helvetica', 20))
             molar_ratio_lb.pack()
 
 
@@ -137,10 +147,10 @@ class Practice:
         second_compound_entry = tk.Entry(molar_ratio_frame, width=2, bg='white', font=('Helvetica', 20))
 
 
-        self.molar_ratio_entries.append(first_compound_entry)
-        self.molar_ratio_entries.append(second_compound_entry)
-        for entry in self.molar_ratio_entries:
-            entry.bind("<Return>", self.check_molar_ratio)
+        self.molar_ratio_entries[0] = second_compound_entry
+        self.molar_ratio_entries[1] = first_compound_entry
+        second_compound_entry.bind("<Return>", self.check_molar_ratio)
+        first_compound_entry.bind("<Return>", self.check_molar_ratio)
 
         molar_ratio_step_lb.pack()
         molar_ratio_dir_label.pack()
@@ -176,25 +186,27 @@ class Practice:
 
     def check_balance(self,args):
         count = 0
-        for block in self.balance_entries:
-            if block[0].get() != "":
-                coeff = int(block[0].get())
-                if self.equation.is_correct_coeff(coeff, block[1]):
-                    block[0].configure(state='disabled')
+        for compound in self.balance_entries:
+            entry = self.balance_entries[compound]
+            inputted_coeff = entry.get()
+            if inputted_coeff != "":
+                coeff = int(inputted_coeff)
+                if self.equation.is_correct_coeff(coeff, compound):
+                    entry.configure(state='disabled')
                     count += 1
                 else:
-                    block[0].configure(bg='red')
+                    entry.configure(bg='red')
         if count == len(self.balance_entries):
             self.check_next_step()
 
     # called if user can't balance the equation themselves
     def balance_equation(self):
-        for block in self.balance_entries:
-            current_val = block[0].get()
-            block[0].delete(0,len(current_val))
-            block[0].insert(0,str(self.equation.get_correct_coeff(block[1])))
-
-            block[0].configure(state='disabled')
+        for compound in self.balance_entries:
+            entry = self.balance_entries[compound]
+            current_val = entry.get()
+            entry.delete(0,len(current_val))
+            entry.insert(0,str(self.equation.get_correct_coeff(compound)))
+            entry.configure(state='disabled')
         self.check_next_step()
 
 
@@ -204,9 +216,10 @@ class Practice:
     def show_equation_balance(self,frame, compounds, side):
         for index, comp in enumerate(compounds):
             entry_box = tk.Entry(frame, width=2, bg='white', font=('Helvetica', 20))
-            self.balance_entries.append([entry_box, comp])
-
+            self.balance_entries[comp] = entry_box
+            entry_box.bind("<Return>", self.check_balance)
             format_comp = format_subscripts(comp)
+
             if index == len(compounds) - 1:
                 if side == 'r':
                     format_comp +=  " ->"
@@ -255,15 +268,8 @@ class Practice:
         problem_lb.pack(pady=20)
         step_one_lb.pack(pady=10)
 
-
         balancing_frame = tk.Frame(self.screen, bg='white') 
         self.show_equation_balance(balancing_frame, eq.get_reactants(), 'r')
         self.show_equation_balance(balancing_frame, eq.get_products(), 'p')
-
-        # 0 is the entry
-        # 1 is the compound assoicated with that entry
-        for block in self.balance_entries:
-            block[0].bind("<Return>", self.check_balance)
         balancing_frame.pack()
-
 
