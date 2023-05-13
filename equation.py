@@ -25,6 +25,15 @@ def get_elements_from_comp(comp):
             new_dict[parsing.symbols[atomic_num - 1]] = parsed_compound[atomic_num]
     return new_dict
 
+def parse_equation(eq):
+    eq = eq.rstrip().replace(" ", "")
+    eq= eq.split('=')
+    reactants = eq[0].split('+')
+    products = eq[1].split('+')
+    return ChemicalEquation(reactants, products)
+
+
+
 #parse our text file for chemical equations
 #return an array of chemical equations
 def parse_equations():
