@@ -17,6 +17,14 @@ def format_subscripts(string):
     return new_string
 
 
+def get_elements_from_comp(comp):
+    parsed_compound = parsing.formula_to_composition(comp)
+    new_dict = {}
+    for atomic_num in parsed_compound:
+        if atomic_num != 0:
+            new_dict[parsing.symbols[atomic_num - 1]] = parsed_compound[atomic_num]
+    return new_dict
+
 #parse our text file for chemical equations
 #return an array of chemical equations
 def parse_equations():
@@ -34,6 +42,9 @@ def parse_equations():
 def calculate_molar_mass(comp):
     parsed_compound = parsing.formula_to_composition(comp)
     return round(periodic.mass_from_composition(parsed_compound), 4)
+
+def percent_error(observed, accepted):
+    return abs((observed - accepted) / observed) * 100
 
     
 #takes in a string of a compound
@@ -76,13 +87,19 @@ class ChemicalEquation:
         return self.products
 
     def is_correct_coeff(self, coeff, compound):
-        print(self.bal_react)
-        print(self.bal_prod)
         if compound in self.bal_react:
             return self.bal_react[compound] == coeff
         if compound in self.bal_prod:
             return self.bal_prod[compound]  == coeff
         return False
+
+    def get_correct_coeff(self, compound):
+        if compound in self.bal_react:
+            return self.bal_react[compound]    
+        if compound in self.bal_prod:
+            return self.bal_prod[compound] 
+        return -1
+
 
     def as_string(self):
         formula = ""
@@ -115,10 +132,6 @@ class ChemicalEquation:
         elif comp2 in self.bal_prod:
             coeff_two = self.bal_prod[comp2]
 
-        return coeff_one / coeff_two
-
-
-
-
-
+        return (coeff_one, coeff_two)
+    
 
