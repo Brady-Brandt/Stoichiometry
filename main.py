@@ -34,9 +34,9 @@ class Root:
         stoich_practice_button = tk.Button(self.menu_frame, bg='white', text="Stoichiometry Practice", width =20, height=3)
         stoich_problem_button = tk.Button(self.menu_frame, bg='white', text="Stoichiometry Problem Help", width=20,height=3)
 
-        title.pack(pady=20)
-        stoich_practice_button.pack(pady=10)
-        stoich_problem_button.pack(pady=10)
+        title.pack(pady=100)
+        stoich_practice_button.pack(pady=20)
+        stoich_problem_button.pack(pady=20)
         
 
         stoich_problem_button.config(command=self.start_help)
