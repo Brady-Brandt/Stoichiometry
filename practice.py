@@ -17,7 +17,7 @@ class Practice:
         self.canvas = canvas
         self.scrollbar = scrollbar
         self.canvas.configure(yscrollcommand = self.scrollbar.set, width=self.screen.winfo_width(), height=self.screen.winfo_height())
-        self.scroll_frame = tk.Frame(self.canvas)         
+        self.scroll_frame = tk.Frame(self.canvas, bg='white')         
         self.scroll_frame.bind('<Configure>', self.conf_frame)
         self.canvas.bind('<Configure>', self.configure_canvas)
         self.canvas.configure(yscrollcommand=self.scrollbar.set)
@@ -26,6 +26,7 @@ class Practice:
         self.window = self.canvas.create_window((0,0), width=self.canvas["width"], window=self.scroll_frame, anchor='nw')
         self.canvas.pack()
 
+        self.tolerance = 5
 
         #holds all the entry widgets to enter
         # for balanced equations
@@ -114,7 +115,7 @@ class Practice:
             if inputted_molar_mass != "":
                 molar_mass = float(inputted_molar_mass)
                 # checks if the molar mass inputted is correct
-                if percent_error(molar_mass, calculate_molar_mass(element)):
+                if percent_error(molar_mass, calculate_molar_mass(element)) < self.tolerance:
                     self.user_inputted_mass[element] = molar_mass
                     #check if the user has already inputted a correct value 
                     # if so we don't want to re enable the entry
@@ -135,7 +136,7 @@ class Practice:
                 product = float(inputted_total_mass)
                 # get the molar mass inputted by user times the number of particles  
                 expected_prod = self.elements[element] * self.user_inputted_mass[element]
-                if percent_error(product, expected_prod) < 2:
+                if percent_error(product, expected_prod) < self.tolerance:
                     self.user_inputted_multiply_mass[element] = product
                     # set the bg to blue to check if it has been disabled by the 
                     # user inputting a correct value
@@ -151,7 +152,7 @@ class Practice:
         moles = self.mole_entry.get()
         if moles != "":
             moles = float(moles)
-            if percent_error(moles, self.grams / self.molar_mass) < 2:
+            if percent_error(moles, self.grams / self.molar_mass) < self.tolerance:
                 self.mole_entry.configure(state='disabled')
                 self.moles = moles
                 self.show_molar_ratio()
@@ -179,7 +180,7 @@ class Practice:
     def check_grams(self, args):
         if self.gram_entry.get() != "":
             grams = float(self.gram_entry.get())
-            if percent_error(grams, self.moles * self.molar_mass) < 2:
+            if percent_error(grams, self.moles * self.molar_mass) < self.tolerance:
                 self.gram_entry.configure(state='disabled')
                 self.result = grams
                 self.display_answer()
@@ -212,7 +213,7 @@ class Practice:
     def check_mole_conversion(self, args):
         if self.mole_convert_entry.get() != "":
             moles = float(self.mole_convert_entry.get())
-            if percent_error(moles, self.moles * self.molar_ratio) < 2:
+            if percent_error(moles, self.moles * self.molar_ratio) < self.tolerance:
                 self.moles = moles
                 self.mole_convert_entry.configure(state='disabled')
                 if self.first_unit == "moles":
@@ -253,7 +254,7 @@ class Practice:
             expected_mass = 0
             for element in self.user_inputted_multiply_mass:
                 expected_mass += self.user_inputted_multiply_mass[element]
-            if percent_error(total_mass, expected_mass) < 2:
+            if percent_error(total_mass, expected_mass) < self.tolerance:
                 self.molar_mass = total_mass
                 self.total_molar_mass_entry.configure(state='disabled')
 
