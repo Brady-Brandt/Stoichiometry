@@ -28,11 +28,12 @@ def get_elements_from_comp(comp):
 def parse_equation(eq):
     eq = eq.rstrip().replace(" ", "")
     eq= eq.split('=')
-    reactants = eq[0].split('+')
-    products = eq[1].split('+')
-    return ChemicalEquation(reactants, products)
-
-
+    # check for reactants and products
+    if len(eq) == 2:
+        reactants = eq[0].split('+')
+        products = eq[1].split('+')     
+        return ChemicalEquation(reactants, products)
+    return None
 
 #parse our text file for chemical equations
 #return an array of chemical equations
@@ -67,11 +68,22 @@ def moles_to_grams(comp, moles):
 
 class ChemicalEquation:
     def __init__(self, reactants, prod):
+        print(reactants, prod)
         self.formula = reactants + prod
-        self.reactants = dict.fromkeys(prod)
-        self.products = dict.fromkeys(reactants)
-        
-        self.bal_react, self.bal_prod = chemistry.balance_stoichiometry(self.reactants, self.products)
+        self.reactants = dict.fromkeys(reactants)
+        self.products = dict.fromkeys(prod)
+        self.bal_react = {}
+        self.bal_prod = {}
+      
+        try:
+            self.bal_react, self.bal_prod = chemistry.balance_stoichiometry(self.reactants, self.products)
+        except Exception as e:
+            print(e) 
+            self.bal_react = {}
+            self.bal_prod = {}
+            self.reactants = {}
+            self.products = {}
+
     def print(self):
         print("Equation: ")
         for react in self.reactants:
