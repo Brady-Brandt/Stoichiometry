@@ -79,6 +79,9 @@ class Practice:
         self.user_inputted_multiply_mass = {}
 
         self.vcmd = (self.screen.register(self.validate_digits), '%P')
+        
+        #hot fix for a bug that shows the answer if you keep hitting enter
+        self.has_shown_answer = False
 
     def conf_frame(self, event):
         self.canvas.configure(scrollregion=self.canvas.bbox("all"), width=self.screen.winfo_width(), height=self.screen.winfo_height())
@@ -201,9 +204,10 @@ class Practice:
 
 
     def display_answer(self):
-        answer_lb = tk.Label(self.scroll_frame, bg='white', text=f"So the answer is {self.result} {self.first_unit} :)", font=self.font25)
-        answer_lb.pack()
-
+        if not self.has_shown_answer:
+            answer_lb = tk.Label(self.scroll_frame, bg='white', text=f"So the answer is {self.result} {self.first_unit} :)", font=self.font25)
+            answer_lb.pack()
+            self.has_shown_answer = True
     
     def check_mole_conversion(self, args):
         if self.mole_convert_entry.get() != "":
