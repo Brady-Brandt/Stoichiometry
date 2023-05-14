@@ -40,7 +40,10 @@ class Practice:
         self.mole_convert_entry = None
         self.equation_entry = None
 
-        self.equation_entry_button = None
+        self.equation_entry_button = None 
+        self.option_values = []
+        self.amount_entry = None
+        self.help_solve_button = None
         self.help_button = None
 
 
@@ -52,7 +55,10 @@ class Practice:
 
 
         # all relate to the current problem 
-        self.formula = None
+        self.formula = []
+        self.reactants = []
+        self.reacants = []
+
         self.first_unit = "grams"
         self.first_compound = None
         self.format_first_comp = None 
@@ -375,7 +381,6 @@ class Practice:
         for compound in self.balance_entries:
             entry = self.balance_entries[compound]
             inputted_coeff = entry.get()
-            print(inputted_coeff)
             if inputted_coeff != "":
                 coeff = int(inputted_coeff)
                 if self.equation.is_correct_coeff(coeff, compound):
@@ -454,16 +459,98 @@ class Practice:
         problem_str = f"How many {self.first_unit} of {self.format_first_comp} do I need to produce {self.amount} {self.second_unit} of {self.format_second_comp}"
         self.show_practice_widgets(problem_str,self.equation)
 
+    def check_options(self):
+        error_frame = tk.Frame(self.scroll_frame)
+        failed_to_fill = tk.Label(error_frame, text='Need to fill everything out', fg='red')
+        error_lb = tk.Label(error_frame, text="Error: Need to input one product and one reactant", fg='red')
+
+        first_units = self.option_values[0].get() 
+        first_comp = self.option_values[1].get()
+        second_units = self.option_values[2].get()
+        second_comp = self.option_values[3].get()
+
+
+        if first_units != "Units" and second_units != "Units" and first_comp != "Compound" and second_comp != "Compound":
+            if first_comp in self.reactants and second_comp in self.products or first_comp in self.products and second_comp in self.reactants and self.amount_entry.get() != "":
+                self.first_unit = first_units
+                self.second_unit = second_units
+                self.first_compound = first_comp
+                self.second_compound = second_comp
+                self.amount = float(self.amount_entry.get())
+                self.format_first_comp = format_subscripts(self.first_compound)
+                self.format_second_comp = format_subscripts(self.second_compound)
+                problem_str = f"How many {self.first_unit} of {self.format_first_comp} do I need to produce {self.amount} {self.second_unit} of {self.format_second_comp}"
+                self.show_practice_widgets(problem_str,self.equation)
+
+
+                if self.second_unit == "moles":
+                     self.moles = self.amount
+                else:
+                    self.grams = self.amount
+
+                error_frame.destroy()
+                self.help_solve_button.configure(state='disabled')
+
+            else:
+                error_frame.pack()
+                error_lb.pack()
+        else:
+            error_frame.pack()
+            failed_to_fill.pack()
+         
+                
+
+
     def set_problem(self):
-        if self.equation_entry.get() != 0:
+        self.equation_entry.configure(bg='white')
+        if self.equation_entry.get() != "":
             self.equation = parse_equation(self.equation_entry.get())
-            self.formula = self.equation.get_formula()
-            self.equation_entry_button.configure(state='disabled')
+            if self.equation == None or len(self.equation.get_reactants()) == 0 or len(self.equation.get_products()) == 0:
+                self.equation_entry.configure(bg='red')
+            else:
+                self.reactants = list(self.equation.get_reactants().keys())
+                self.products= list(self.equation.get_products().keys())
+
+                self.formula = self.equation.get_formula()
+                self.equation_entry_button.configure(state='disabled')
+                frame = tk.Frame(self.scroll_frame, bg='white')
+                opt_font = ('Helvetica', 15)
+                start_lb = tk.Label(frame, bg='white', text="How many", font=opt_font)
+                first_opt_val = tk.StringVar(frame, "Units")
+                first_opt_menu = tk.OptionMenu(frame,first_opt_val, *["grams", "moles"])
+               
+                
+                second_opt_val = tk.StringVar(frame, "Compound")
+                second_opt_menu = tk.OptionMenu(frame, second_opt_val,*self.formula) 
+
+                self.amount_entry = tk.Entry(frame, width=8, bg='white', validate='all', validatecommand=self.vcmd, font=opt_font)
+
+                third_opt_val = tk.StringVar(frame, "Units")
+                third_opt_menu = tk.OptionMenu(frame,third_opt_val, *["grams", "moles"])
+                fourth_opt_val = tk.StringVar(frame, "Compound")
+                fourth_opt_menu = tk.OptionMenu(frame, fourth_opt_val,*self.formula)
+
+                self.option_values = [first_opt_val, second_opt_val, third_opt_val, fourth_opt_val]
+
+                frame.pack()
+                start_lb.grid(row=0)
+                first_opt_menu.grid(row=0, column=1)
+                tk.Label(frame, bg='white', text=" of ", font=self.font25).grid(row=0, column=2)
+                second_opt_menu.grid(row=0, column=3)
+                tk.Label(frame, bg='white', font=('Helvetica', 15),text=" do I need to produce").grid(row=1)
+                self.amount_entry.grid(row=1,column=1)
+                third_opt_menu.grid(row=1,column=2)
+                tk.Label(frame, bg='white', text=" of ", font=self.font25).grid(row=1, column=3)
+                fourth_opt_menu.grid(row=1,column=4)
+                self.help_solve_button = tk.Button(self.scroll_frame, text='Help me Solve', height=2, command=self.check_options)
+                self.help_solve_button.pack()
+
+
 
 
     def setup_help(self):
-        dir_label = tk.Label(self.scroll_frame,bg='white', text="Enter a chemical reaction in the form: Mg(OH)2 = (MgOH)2O + H20", font=self.font25)
-        self.equation_entry = tk.Entry(self.scroll_frame, bg='white', width=50, font=('Helvetica', 20), validate='all', validatecommand=self.vcmd)
+        dir_label = tk.Label(self.scroll_frame,bg='white', text="Enter a chemical reaction in the form: Mg(OH)2 = (MgOH)2O + H20\n Do not enter the physical state for example F(s)", font=self.font25)
+        self.equation_entry = tk.Entry(self.scroll_frame, bg='white', width=50, font=('Helvetica', 20))
         self.equation_entry_button = tk.Button(self.scroll_frame, height=3, text="Enter", command = self.set_problem)
 
         dir_label.pack()
