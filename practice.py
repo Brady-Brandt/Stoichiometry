@@ -229,8 +229,8 @@ class Practice:
         directions_lb = tk.Label(self.scroll_frame, bg='white', text=f"Get the moles of {format_first_comp} by taking the moles of {format_second_comp} X molar ratio ", font=('Helvetica', 20))
 
         formula_lb = tk.Label(mole_to_mole_frame, bg='white', text=f"{self.moles} X {self.molar_ratio} = ", font=self.font25)
-        self.mole_convert_entry = tk.Entry(mole_to_mole_frame, bg='white', font=self.font25, width=4, validate='all', validatecommand=self.vcmd)
-        units_lb = tk.Label(mole_to_mole_frame, bg='white', text=f" Moles of {self.second_compound}", font=self.font25)
+        self.mole_convert_entry = tk.Entry(mole_to_mole_frame, bg='white', font=self.font25, width=8, validate='all', validatecommand=self.vcmd)
+        units_lb = tk.Label(mole_to_mole_frame, bg='white', text=f" Moles of {self.format_first_comp}", font=self.font25)
 
         self.mole_convert_entry.bind("<Return>", self.check_mole_conversion)
         directions_lb.pack()
@@ -280,6 +280,8 @@ class Practice:
         self.elements = get_elements_from_comp(comp)
         self.user_inputted_mass = {}
         self.user_inputted_multiply_mass = {}
+        self.molar_mass_multiply_entries = {}
+        self.molar_mass_entries = {}
 
         for elem in self.elements:
             entry = tk.Entry(molar_mass_frame,width=8, bg='white',  font=self.font25, validate='all', validatecommand=self.vcmd)
@@ -392,16 +394,25 @@ class Practice:
             self.check_next_step()
 
     # called if user can't balance the equation themselves
+    # input one coeff at a time 
     def balance_equation(self):
+        count = 0
         for compound in self.balance_entries:
             entry = self.balance_entries[compound]
-            current_val = entry.get()
-            entry.delete(0,len(current_val))
-            entry.insert(0,str(self.equation.get_correct_coeff(compound)))
-            entry.configure(state='disabled')
+            if entry["state"] == 'disabled':
+                count += 1
+                continue
+            else:
+                count += 1
+                current_val = entry.get()
+                entry.delete(0,len(current_val))
+                entry.insert(0,str(self.equation.get_correct_coeff(compound)))
+                entry.configure(state='disabled')
+                break
 
-        self.help_button.configure(state='disabled')
-        self.check_next_step()
+        if count == len(self.balance_entries):
+            self.help_button.configure(state='disabled')
+            self.check_next_step()
 
 
 
@@ -437,17 +448,27 @@ class Practice:
 
     def setup_problem(self):
         random.seed(time.time())
-        self.equation = equations[random.randrange(0,48)]
+        self.equation = equations[random.randrange(0,len(equations)-1)]
         self.formula = self.equation.get_formula()
+        self.reactants = list(self.equation.get_reactants().keys())
+        self.products= list(self.equation.get_products().keys())
 
         self.first_unit = random.choice(["grams", "moles"]) 
-        self.first_compound = self.formula.pop(random.randrange(len(self.formula)))
+        self.second_unit = random.choice(["grams", "moles"])
+
+        first_is_react = random.randrange(0,2)
+        if first_is_react:
+            which_reaction = "do I need to produce"
+            self.first_compound = self.reactants.pop(random.randrange(len(self.reactants))) 
+            self.second_compound = self.products.pop(random.randrange(len(self.products)))
+
+        else:
+            self.first_compound = self.products.pop(random.randrange(len(self.products))) 
+            self.second_compound = self.reactants.pop(random.randrange(len(self.reactants)))
+            which_reaction = "will I produce if I react"
+
         self.format_first_comp = format_subscripts(self.first_compound)
-
-        self.second_unit = random.choice(["grams", "moles"]) 
-        self.second_compound = self.formula.pop(random.randrange(len(self.formula)))
         self.format_second_comp = format_subscripts(self.second_compound)
-
         molar_mass = calculate_molar_mass(self.second_compound)
         self.amount = round(random.uniform(1,molar_mass * 3),3)
 
@@ -456,7 +477,7 @@ class Practice:
         else:
             self.grams = self.amount
 
-        problem_str = f"How many {self.first_unit} of {self.format_first_comp} do I need to produce {self.amount} {self.second_unit} of {self.format_second_comp}"
+        problem_str = f"How many {self.first_unit} of {self.format_first_comp} {which_reaction} {self.amount} {self.second_unit} of {self.format_second_comp}"
         self.show_practice_widgets(problem_str,self.equation)
 
     def check_options(self):
