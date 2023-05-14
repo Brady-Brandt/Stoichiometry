@@ -68,7 +68,6 @@ def moles_to_grams(comp, moles):
 
 class ChemicalEquation:
     def __init__(self, reactants, prod):
-        print(reactants, prod)
         self.formula = reactants + prod
         self.reactants = dict.fromkeys(reactants)
         self.products = dict.fromkeys(prod)
