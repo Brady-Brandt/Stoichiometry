@@ -460,8 +460,8 @@ class Practice:
         self.reactants = list(self.equation.get_reactants().keys())
         self.products= list(self.equation.get_products().keys())
 
-        #self.first_unit = random.choice(["grams", "moles"]) 
-        #self.second_unit = random.choice(["grams", "moles"])
+        self.first_unit = random.choice(["grams", "moles"]) 
+        self.second_unit = random.choice(["grams", "moles"])
         first_is_react = random.randrange(0,2)
         if first_is_react:
             which_reaction = "do I need to produce"
