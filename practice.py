@@ -26,7 +26,7 @@ class Practice:
         self.window = self.canvas.create_window((0,0), width=self.canvas["width"], window=self.scroll_frame, anchor='nw')
         self.canvas.pack()
 
-        self.tolerance = 5
+        self.tolerance = 10
 
         #holds all the entry widgets to enter
         # for balanced equations
