@@ -258,7 +258,7 @@ class Practice:
                 self.molar_mass = total_mass
                 self.total_molar_mass_entry.configure(state='disabled')
 
-                if self.grams != 0:
+                if self.grams != 0 and self.moles == 0:
                     self.show_grams_to_moles(self.second_compound)
                 else:
                     self.show_moles_to_grams()
@@ -281,6 +281,8 @@ class Practice:
         molar_mass_dir_lb.pack()
         molar_mass_tip_lb.pack()
         row = 0
+
+
         #setup labels and entries for calculating molar mass
         self.elements = get_elements_from_comp(comp)
         self.user_inputted_mass = {}
@@ -458,9 +460,8 @@ class Practice:
         self.reactants = list(self.equation.get_reactants().keys())
         self.products= list(self.equation.get_products().keys())
 
-        self.first_unit = random.choice(["grams", "moles"]) 
-        self.second_unit = random.choice(["grams", "moles"])
-
+        #self.first_unit = random.choice(["grams", "moles"]) 
+        #self.second_unit = random.choice(["grams", "moles"])
         first_is_react = random.randrange(0,2)
         if first_is_react:
             which_reaction = "do I need to produce"
