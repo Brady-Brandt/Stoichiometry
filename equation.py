@@ -3,6 +3,30 @@ from chempy.util import periodic
 from chempy.util import parsing
 
 
+equations = """
+N2O3 + H2O = HNO2
+HAsO3 = As2O5 + H2O
+HIO3 = I2O5 + H2O
+Fe2O3 + SiO2 = Fe2Si2O7
+Na2O + H2O = NaOH
+NH4NO3 = N2O + H2O
+Mg(OH)2 = (MgOH)2O + H2O
+HAsO3 = As2O5 + H2O
+KHSO4 = K2S2O7 + H2O
+H3PO4 = H4P2O7 + H2O
+Ca(OH)2 + CO2 = Ca(HCO3)2
+CaSO4 = CaS + O2
+Mg + N2 = Mg3N2
+K2O + H2O = KOH
+N2O5 + H2O = HNO3
+CaS + H2O = Ca(OH)2 + H2S
+Li2O + H2O = LiOH
+Na2HPO4 = Na4P2O7 + H2O
+H4As2O7 = As2O5 + H2O
+Al(OH)3 + NaOH = NaAlO2 + H2O
+(CuOH)2CO3 = CuO + CO2 + H2O
+"""
+
 
 subscripts = {'0': '₀', '1': '₁', '2': '₂', '3': '₃', '4': '₄', '5': '₅', '6': '₆', '7': '₇', '8': '₈', '9': '₉'}
 
@@ -32,21 +56,19 @@ def parse_equation(eq):
     if len(eq) == 2:
         reactants = eq[0].split('+')
         products = eq[1].split('+')     
+        print(reactants, products, sep=", ")
         return ChemicalEquation(reactants, products)
     return None
 
-#parse our text file for chemical equations
+#parses the string at the top of the file for chemical equations
 #return an array of chemical equations
 def parse_equations():
-    with open("equations.txt") as f:
-        chemical_equations_arr = []
-        equations_str = [line.rstrip().replace(" ", "") for line in f]
-        for eq in equations_str:
-           equation = eq.split('=')
-           reactants = equation[0].split('+')
-           products = equation[1].split('+')
-           chemical_equations_arr.append(ChemicalEquation(reactants, products))
-        return chemical_equations_arr
+    chemical_equations_arr = []
+    for equation in equations.splitlines():
+        eq = parse_equation(equation)             
+        if eq != None:
+            chemical_equations_arr.append(eq)
+    return chemical_equations_arr
             
 
 def calculate_molar_mass(comp):
@@ -62,6 +84,8 @@ class ChemicalEquation:
         self.formula = reactants + prod
         self.reactants = dict.fromkeys(reactants)
         self.products = dict.fromkeys(prod)
+
+        # balanced products and reactants 
         self.bal_react = {}
         self.bal_prod = {}
       
