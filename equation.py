@@ -57,15 +57,6 @@ def percent_error(observed, accepted):
     return abs((observed - accepted) / observed) * 100
 
     
-#takes in a string of a compound
-#takes in an float amount of grams
-#returns amount of moles 
-def grams_to_moles(comp, grams):
-    return grams / calculate_molar_mass(comp)
-
-def moles_to_grams(comp, moles):
-    return calculate_molar_mass(comp) * moles
-
 class ChemicalEquation:
     def __init__(self, reactants, prod):
         self.formula = reactants + prod
@@ -83,23 +74,6 @@ class ChemicalEquation:
             self.reactants = {}
             self.products = {}
 
-    def print(self):
-        print("Equation: ")
-        for react in self.reactants:
-            print(react, end=" ")
-
-        print("->", end=" ")
-        for prod in self.products:
-            print(prod, end=" ")
-        print("\nBalanced Equation")
-        for react in self.bal_react:
-            print(str(self.bal_react[react]) + react, end=" ")
-
-        print("->", end=" ")
-        for prod in self.bal_prod:
-            print(str(self.bal_prod[prod]) + prod, end=" ")
-
-        print("\n")
 
     def get_reactants(self):
         return self.reactants
@@ -133,7 +107,6 @@ class ChemicalEquation:
 
         formula = formula[:-3]
         return format_subscripts(formula)
-
 
                 
     def get_formula(self):

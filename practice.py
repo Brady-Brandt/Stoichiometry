@@ -163,17 +163,13 @@ class Practice:
     def show_grams_to_moles(self, compound):
         gram_to_mole_frame = tk.Frame(self.scroll_frame, bg='white')
         format_comp = format_subscripts(compound)
-        directions_lb = tk.Label(self.scroll_frame, bg='white', text=f"Get the moles of {format_comp} by taking grams / molar mass", font=self.font25)
-        formula_lb = tk.Label(gram_to_mole_frame, bg='white', text=f"{self.grams}/{self.molar_mass} = ", font=self.font25)
-        units_lb = tk.Label(gram_to_mole_frame, bg='white', text=f"moles of {format_comp}", font=self.font25)
+        tk.Label(self.scroll_frame, bg='white', text=f"Get the moles of {format_comp} by taking grams / molar mass", font=self.font25).pack()
+        tk.Label(gram_to_mole_frame, bg='white', text=f"{self.grams}/{self.molar_mass} = ", font=self.font25).grid(row=1)
+        tk.Label(gram_to_mole_frame, bg='white', text=f"moles of {format_comp}", font=self.font25).grid(row1, column=2)
+
         self.mole_entry = tk.Entry(gram_to_mole_frame, bg='white', font=self.font25, width=8, validate='all', validatecommand=self.vcmd)
-
         self.mole_entry.bind("<Return>", self.check_moles)
-
-        directions_lb.pack()
-        formula_lb.grid(row=1)
         self.mole_entry.grid(row=1,column=1)
-        units_lb.grid(row=1, column=2)
         gram_to_mole_frame.pack()
                
 
@@ -190,17 +186,13 @@ class Practice:
     def show_moles_to_grams(self):
         format_comp = format_subscripts(self.first_compound)
         mole_to_gram_frame = tk.Frame(self.scroll_frame, bg='white')
-        directions_lb = tk.Label(self.scroll_frame, bg='white', text=f"Get the grams of {format_comp} by taking moles X molar mass", font=self.font25)
-        formula_lb = tk.Label(mole_to_gram_frame, bg='white', text=f"{self.moles} X {self.molar_mass}=", font=self.font25)
-        units_lb = tk.Label(mole_to_gram_frame, bg='white', text=f"grams of {format_comp}", font=self.font25)
+        tk.Label(self.scroll_frame, bg='white', text=f"Get the grams of {format_comp} by taking moles X molar mass", font=self.font25).pack()
+        tk.Label(mole_to_gram_frame, bg='white', text=f"{self.moles} X {self.molar_mass}=", font=self.font25).grid(row=1)
+        tk.Label(mole_to_gram_frame, bg='white', text=f"grams of {format_comp}", font=self.font25).grid(row=1,column=2)
+
         self.gram_entry = tk.Entry(mole_to_gram_frame, bg='white', font=self.font25, width=8, validate='all', validatecommand=self.vcmd)
         self.gram_entry.bind("<Return>", self.check_grams)
-
-        directions_lb.pack()
-        formula_lb.grid(row=1)
-        self.gram_entry.grid(row=1, column=1)
-        units_lb.grid(row=1, column=2)
-
+        self.gram_entry.grid(row=1, column=1) 
         mole_to_gram_frame.pack()
 
 
