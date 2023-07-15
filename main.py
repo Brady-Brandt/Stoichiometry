@@ -1,6 +1,7 @@
 import tkinter as tk
 from equation import *
 from practice import *
+from periodictable import *
 
 
 class Root:
@@ -15,13 +16,14 @@ class Root:
         self.menu_button = tk.Button(self.screen, height = 2, text="Main Menu", command = self.show_main_menu)
         self.scrollbar = tk.Scrollbar(self.screen, orient='vertical', command=self.canvas.yview)
         self.scrollbar.pack()
+        self.periodic_table = PeriodicTable(self.screen)
         #0 menu
         # 1 practice or help 
         self.which_frame = 0
 
         self.scrollbar.pack(side='right', fill='y')
     def show_main_menu(self):
-
+        
         if self.which_frame == 1:
             for widget in self.canvas.winfo_children():
                 widget.destroy()
@@ -33,14 +35,19 @@ class Root:
         title = tk.Label(self.menu_frame,text = "Stoichiometry Interactive Guide", font=('Helvetica bold', 25), bg='white')
         stoich_practice_button = tk.Button(self.menu_frame, bg='white', text="Stoichiometry Practice", width =20, height=3)
         stoich_problem_button = tk.Button(self.menu_frame, bg='white', text="Stoichiometry Problem Help", width=20,height=3)
+        periodic_table_button = tk.Button(self.menu_frame, bg='white', text="Periodic Table", width=20,height=3 )
+
 
         title.pack(pady=100)
         stoich_practice_button.pack(pady=20)
         stoich_problem_button.pack(pady=20)
+        periodic_table_button.pack(pady=20)
         
 
         stoich_problem_button.config(command=self.start_help)
         stoich_practice_button.config(command = self.start_practice) 
+        periodic_table_button.config(command=self.periodic_table.show_periodic_table)
+
 
     def start_practice(self):
         for widget in self.menu_frame.winfo_children():
@@ -63,10 +70,6 @@ class Root:
         self.menu_button.pack(side='top', anchor='nw')
         help_session = Practice(self.screen, self.WIDTH, self.HEIGHT, self.canvas, self.scrollbar)
         help_session.setup_help()
-        
-
-
-
 
 WIDTH = 800
 HEIGHT = 800
