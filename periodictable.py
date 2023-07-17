@@ -42,6 +42,9 @@ class PeriodicTable:
         self.window.protocol("WM_DELETE_WINDOW", self.window.withdraw)
         self.window.withdraw()
 
+        self.element_lb = tk.Label(self.window,font=('Helvetica', 20), text="Element: \nAtomic Number: \n Atomic Mass:")
+        self.element_lb.place(x=200,y=50)
+
 
         self.window_width = 1080
         self.window_height = 600
@@ -50,7 +53,37 @@ class PeriodicTable:
         # size of each box on the periodic table 
         self.frame_size = 60
         for atomic_number in range(1,119):
-            self.elements.append(Element(self.window, atomic_number))
+            element = Element(self.window, atomic_number)
+            element.frame.bind("<Enter>", self.enter)
+            element.frame.bind("<Leave>", self.leave)
+            self.elements.append(element)
+
+    # gets the number from the widget name 
+    # this number will correspond to the elements 
+    # atomic number that the frame is holding
+    def get_frame_number(self, widget):
+        #atomic number is a max of three digits 
+        atomic_number = ""
+        number = widget[-3:] 
+        for char in number:
+            if char.isdigit():
+                atomic_number += char
+        try:
+            return int(atomic_number)
+        except:
+            #hydrogen's frame tag is just frame
+            return 1
+
+    def enter(self, event):
+        atomic_number = self.get_frame_number(str(event.widget))
+        element = self.elements[atomic_number-1]
+        element.frame.configure(highlightbackground = "red") 
+        self.element_lb.config(text=f"Element: {element.element}\nAtomic Number: {element.atomic}\n Atomic Mass: {element.mass}")
+
+    def leave(self, event):
+        atomic_number = self.get_frame_number(str(event.widget))
+        self.elements[atomic_number-1].frame.configure(highlightbackground = "black") 
+        self.element_lb.config(text="Element: \nAtomic Number: \n Atomic Mass:")
 
     def draw_nonmetals(self):
         #draws Hydrogen, Boron, Carbon, Nitrogen, Oxygen
