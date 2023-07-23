@@ -9,11 +9,8 @@ equations = parse_equations()
 
 
 class Practice:
-    def __init__(self, screen, width, height, canvas, scrollbar):
-        self.screen = screen
-        self.width = width
-        self.heigh = height
-       
+    def __init__(self, screen, canvas, scrollbar):
+        self.screen = screen       
         self.canvas = canvas
         self.scrollbar = scrollbar
         self.canvas.configure(yscrollcommand = self.scrollbar.set, width=self.screen.winfo_width(), height=self.screen.winfo_height())
@@ -22,7 +19,6 @@ class Practice:
         self.canvas.bind('<Configure>', self.configure_canvas)
         self.canvas.configure(yscrollcommand=self.scrollbar.set)
         self.canvas.config(scrollregion=self.canvas.bbox("all")) 
-
         self.window = self.canvas.create_window((0,0), width=self.canvas["width"], window=self.scroll_frame, anchor='nw')
         self.canvas.pack()
 
@@ -36,7 +32,6 @@ class Practice:
         self.molar_mass_entries = {}
         #holds the element or ion as the key and its entry as the value
         self.molar_mass_multiply_entries = {}
-        self.total_molar_mass_entry = None
         self.mole_entry = None
         self.mole_convert_entry = None
         self.equation_entry = None
@@ -45,13 +40,8 @@ class Practice:
         self.option_values = []
         self.amount_entry = None
         self.help_solve_button = None
-        self.help_button = None
 
-
-        self.equation = None
-        # used for displaying equation
-        self.col = 0
-
+        self.equation = None        
         self.font25 = ('Helvetica', 25)
 
 
@@ -88,9 +78,9 @@ class Practice:
         self.canvas.configure(scrollregion=self.canvas.bbox("all"), width=self.screen.winfo_width(), height=self.screen.winfo_height())
 
     def configure_canvas(self, event):
-        if self.canvas.winfo_width() != self.screen.winfo_width():
-            self.canvas["width"] = self.screen.winfo_width()
-            self.canvas.itemconfig(self.window, width=self.canvas["width"])
+        #if self.canvas.winfo_width() != self.screen.winfo_width():
+            #self.canvas["width"] = str(self.screen.winfo_width() - 100)
+            #self.canvas.itemconfig(self.window, width=self.canvas["width"])
         if self.canvas.winfo_height() != self.screen.winfo_height():
             self.canvas["height"] = self.screen.winfo_height()
 
@@ -104,9 +94,6 @@ class Practice:
             return True
         except ValueError:
             return False
-        return False
-
-
 
     def check_mass(self, args):
         for element in self.molar_mass_entries:
@@ -127,14 +114,14 @@ class Practice:
                 else:
                     entry.configure(bg='red')
 
-    def check_multiply_mass(self, args):
+    def check_multiply_mass(self, total_molar_mass_entry):
         count = 0
         for element in self.molar_mass_multiply_entries:
             entry = self.molar_mass_multiply_entries[element]
             inputted_total_mass = entry.get()
             if inputted_total_mass != "":
                 product = float(inputted_total_mass)
-                # get the molar mass inputted by user times the number of particles  
+                # get the molar mass inputted by user times the number of atoms/molecules 
                 expected_prod = self.elements[element] * self.user_inputted_mass[element]
                 if percent_error(product, expected_prod) < self.tolerance:
                     self.user_inputted_multiply_mass[element] = product
@@ -145,7 +132,7 @@ class Practice:
                 else:
                     entry.configure(bg='red')
         if count == len(self.molar_mass_entries) - 1:
-            self.total_molar_mass_entry.configure(state='normal')
+            total_molar_mass_entry.configure(state='normal')
 
     
     def check_moles(self, args):
@@ -165,7 +152,7 @@ class Practice:
         format_comp = format_subscripts(compound)
         tk.Label(self.scroll_frame, bg='white', text=f"Get the moles of {format_comp} by taking grams / molar mass", font=self.font25).pack()
         tk.Label(gram_to_mole_frame, bg='white', text=f"{self.grams}/{self.molar_mass} = ", font=self.font25).grid(row=1)
-        tk.Label(gram_to_mole_frame, bg='white', text=f"moles of {format_comp}", font=self.font25).grid(row1, column=2)
+        tk.Label(gram_to_mole_frame, bg='white', text=f"moles of {format_comp}", font=self.font25).grid(row=1, column=2)
 
         self.mole_entry = tk.Entry(gram_to_mole_frame, bg='white', font=self.font25, width=8, validate='all', validatecommand=self.vcmd)
         self.mole_entry.bind("<Return>", self.check_moles)
@@ -236,19 +223,22 @@ class Practice:
         units_lb.grid(row=1, column=2)
         mole_to_mole_frame.pack()
 
-         
-
-
-
-    def check_total_molar_mass(self, args):
-        if self.total_molar_mass_entry.get() != "":
-            total_mass = float(self.total_molar_mass_entry.get())
+    def check_total_molar_mass(self, entry):
+        total_molar_mass = entry.get() 
+        if total_molar_mass != "":
+            total_mass = float(total_molar_mass)
+            # calculate the correct individual masses from user ex.
+            # Calculate molar mass of H20 
+            # H -> User inputs 1 * 2 = 2 
+            # 0 -> User inputs 16 * 1 = 16 
+            # expected mass is equal to 18 
+            # total mass would be if the user decides to round to 20
             expected_mass = 0
             for element in self.user_inputted_multiply_mass:
                 expected_mass += self.user_inputted_multiply_mass[element]
             if percent_error(total_mass, expected_mass) < self.tolerance:
                 self.molar_mass = total_mass
-                self.total_molar_mass_entry.configure(state='disabled')
+                entry.configure(state='disabled')
 
                 if self.grams != 0 and self.moles == 0:
                     self.show_grams_to_moles(self.second_compound)
@@ -256,7 +246,7 @@ class Practice:
                     self.show_moles_to_grams()
                 
             else:
-                self.total_molar_mass_entry.configure(bg='red')
+                entry.configure(bg='red')
                 
 
     def show_molar_mass(self, comp):
@@ -267,7 +257,7 @@ class Practice:
 
         
         total_molar_mass_label = tk.Label(molar_mass_frame, bg='white', text="Molar Mass:", font=self.font25)
-        self.total_molar_mass_entry = tk.Entry(molar_mass_frame, bg='white', state='disabled', width=8, font=self.font25, validate='all', validatecommand=self.vcmd)
+        total_molar_mass_entry = tk.Entry(molar_mass_frame, bg='white', state='disabled', width=8, font=self.font25, validate='all', validatecommand=self.vcmd)
         unit_label = tk.Label(molar_mass_frame, bg='white', text="g/Mol", font=self.font25)
 
         molar_mass_dir_lb.pack()
@@ -300,12 +290,12 @@ class Practice:
             entry.focus()
             self.molar_mass_multiply_entries[elem] = multiply_entry
             self.molar_mass_entries[elem] = entry
-            multiply_entry.bind("<Return>", self.check_multiply_mass)
+            multiply_entry.bind("<Return>", lambda check: self.check_multiply_mass(total_molar_mass_entry))
             entry.bind("<Return>", self.check_mass)
         
         total_molar_mass_label.grid(row=row, column=2)
-        self.total_molar_mass_entry.grid(row=row, column=3)
-        self.total_molar_mass_entry.bind("<Return>", self.check_total_molar_mass)
+        total_molar_mass_entry.grid(row=row, column=3)
+        total_molar_mass_entry.bind("<Return>", lambda check: self.check_total_molar_mass(total_molar_mass_entry))
         unit_label.grid(row=row, column=4)
 
         molar_mass_frame.pack()
@@ -368,33 +358,33 @@ class Practice:
         molar_ratio_frame.pack()
 
 
-        
-    def check_next_step(self):
-        if self.second_unit == "grams":
-            self.show_molar_mass(self.second_compound)
-        else:
-            self.show_molar_ratio()
-
-
-
     def check_balance(self,args):
-        count = 0
-        for compound in self.balance_entries:
-            entry = self.balance_entries[compound]
-            inputted_coeff = entry.get()
-            if inputted_coeff != "":
-                coeff = int(inputted_coeff)
-                if self.equation.is_correct_coeff(coeff, compound):
+        for compound, entry in self.balance_entries.items():
+            try:
+                coefficient = int(entry.get())
+                # if it is the correct coefficient we remove 
+                # the entry from the list and disable it 
+                if self.equation.is_correct_coeff(coefficient, compound):
+                    self.balance_entries.pop(compound)
                     entry.configure(state='disabled')
-                    count += 1
+                    break
                 else:
                     entry.configure(bg='red')
-        if count == len(self.balance_entries):
-            self.check_next_step()
+            except ValueError:
+                if entry.get() != "":
+                    entry.configure(bg='red')
+
+        if len(self.balance_entries) == 0:
+            if self.second_unit == "grams":
+                self.show_molar_mass(self.second_compound)
+            else:
+                self.show_molar_ratio()
+
+
 
     # called if user can't balance the equation themselves
     # input one coeff at a time 
-    def balance_equation(self):
+    def balance_equation(self, help_button):
         count = 0
         for compound in self.balance_entries:
             entry = self.balance_entries[compound]
@@ -403,71 +393,57 @@ class Practice:
                 continue
             else:
                 count += 1
+                # remove anything that is in there and place correct coefficient
                 current_val = entry.get()
                 entry.delete(0,len(current_val))
                 entry.insert(0,str(self.equation.get_correct_coeff(compound)))
                 entry.configure(state='disabled')
                 break
 
+        # if all the entries are balanced we move on to the next step 
         if count == len(self.balance_entries):
-            self.help_button.configure(state='disabled')
-            self.check_next_step()
-
-
-
-    # compounds is either reactants or products
-    #side is a char containing a p or r 
-    def show_equation_balance(self, frame, compounds, side):
-        for index, comp in enumerate(compounds):
-            entry_box = tk.Entry(frame, width=2, bg='white', font=('Helvetica', 20), validate='all', validatecommand=self.vcmd)
-            self.balance_entries[comp] = entry_box
-            entry_box.bind("<Return>", self.check_balance)
-            format_comp = format_subscripts(comp)
-
-            if index == len(compounds) - 1:
-                if side == 'r':
-                    format_comp +=  " ->"
-                else:
-                    format_comp += " "
+            help_button.configure(state='disabled')
+            if self.second_unit == "grams":
+                self.show_molar_mass(self.second_compound)
             else:
-                format_comp +=  "+"
-            
-            compound_str = tk.Label(frame, height=2, bg='white', text=format_comp)
-            compound_str.config(font=('Helvetica', 30))
-
-            entry_box.grid(row=0,column=self.col)
-            self.col += 1
-            compound_str.grid(row=0, column=self.col)
-            self.col += 1
-        if side == 'p':
-           self.help_button = tk.Button(frame, height=2, bg='white', text="Help Me", command=self.balance_equation) 
-           self.help_button.grid(row=0, column=self.col)
+                self.show_molar_ratio()
 
 
 
+               
     def setup_problem(self):
         random.seed(time.time())
+
+        # get a random unbalanced equation from our equations list 
         self.equation = equations[random.randrange(0,len(equations)-1)]
         self.formula = self.equation.get_formula()
-        self.reactants = list(self.equation.get_reactants().keys())
-        self.products= list(self.equation.get_products().keys())
+        #temporary lists used to setup the problem 
+        reactants_list = list(self.equation.get_reactants().keys())
+        products_list= list(self.equation.get_products().keys())
 
+        self.reactants = reactants_list.copy()
+        self.products = products_list.copy()
+
+        # converting from first_unit to second unit 
         self.first_unit = random.choice(["grams", "moles"]) 
         self.second_unit = random.choice(["grams", "moles"])
         first_is_react = random.randrange(0,2)
+        # Getting one reactant and one product for the stoich problem 
         if first_is_react:
             which_reaction = "do I need to produce"
-            self.first_compound = self.reactants.pop(random.randrange(len(self.reactants))) 
-            self.second_compound = self.products.pop(random.randrange(len(self.products)))
+            self.first_compound = reactants_list.pop(random.randrange(len(reactants_list))) 
+            self.second_compound = products_list.pop(random.randrange(len(products_list)))
 
         else:
-            self.first_compound = self.products.pop(random.randrange(len(self.products))) 
-            self.second_compound = self.reactants.pop(random.randrange(len(self.reactants)))
+            self.first_compound = products_list.pop(random.randrange(len(products_list))) 
+            self.second_compound = reactants_list.pop(random.randrange(len(reactants_list)))
             which_reaction = "will I produce if I react"
 
         self.format_first_comp = format_subscripts(self.first_compound)
         self.format_second_comp = format_subscripts(self.second_compound)
         molar_mass = calculate_molar_mass(self.second_compound)
+
+        # amount of moles/grams that you convert from or to
         self.amount = round(random.uniform(1,molar_mass * 3),3)
 
         if self.second_unit == "moles":
@@ -475,8 +451,8 @@ class Practice:
         else:
             self.grams = self.amount
 
-        problem_str = f"How many {self.first_unit} of {self.format_first_comp} {which_reaction} {self.amount} {self.second_unit} of {self.format_second_comp}"
-        self.show_practice_widgets(problem_str,self.equation)
+        problem_str = f"How many {self.first_unit} of {self.format_first_comp}\n{which_reaction} {self.amount} {self.second_unit} of {self.format_second_comp}"
+        self.show_practice_widgets(problem_str)
 
     def check_options(self):
         error_frame = tk.Frame(self.scroll_frame)
@@ -498,8 +474,8 @@ class Practice:
                 self.amount = float(self.amount_entry.get())
                 self.format_first_comp = format_subscripts(self.first_compound)
                 self.format_second_comp = format_subscripts(self.second_compound)
-                problem_str = f"How many {self.first_unit} of {self.format_first_comp} do I need to produce {self.amount} {self.second_unit} of {self.format_second_comp}"
-                self.show_practice_widgets(problem_str,self.equation)
+                problem_str = f"How many {self.first_unit} of {self.format_first_comp}\ndo I need to produce {self.amount} {self.second_unit} of {self.format_second_comp}"
+                self.show_practice_widgets(problem_str)
 
 
                 if self.second_unit == "moles":
@@ -518,7 +494,6 @@ class Practice:
             failed_to_fill.pack()
          
                 
-
 
     def set_problem(self):
         self.equation_entry.configure(bg='white')
@@ -568,7 +543,7 @@ class Practice:
 
 
     def setup_help(self):
-        dir_label = tk.Label(self.scroll_frame,bg='white', text="Enter a chemical reaction in the form: Mg(OH)2 = (MgOH)2O + H20\n Do not enter the physical state for example F(s)", font=self.font25)
+        dir_label = tk.Label(self.scroll_frame,bg='white', text="Enter a chemical reaction in the form: Mg(OH)2 = (MgOH)2O + H20\n Do not enter the physical state for example F(s)", font=('Helvetica', 20))
         self.equation_entry = tk.Entry(self.scroll_frame, bg='white', width=50, font=('Helvetica', 20))
         self.equation_entry_button = tk.Button(self.scroll_frame, height=3, text="Enter", command = self.set_problem)
 
@@ -576,16 +551,40 @@ class Practice:
         self.equation_entry.pack()
         self.equation_entry_button.pack()
 
-    def show_practice_widgets(self, problem_str, eq):
-        problem_lb = tk.Label(self.scroll_frame, bg='white', text=problem_str, anchor='center')
-        problem_lb.configure(font=('Helvetica', 18), height=1)
-        step_one_lb = tk.Label(self.scroll_frame, bg='white', text="Balance the Equation", anchor='center')
-        step_one_lb.configure(font=self.font25)
+    def show_practice_widgets(self, problem_str):
+        problem_lb = tk.Label(self.scroll_frame, bg='white',text=problem_str,  height=2, font=('Helvetica', 18))
+        step_one_lb = tk.Label(self.scroll_frame, bg='white', text="Balance the Equation", font=self.font25)
         problem_lb.pack(pady=20)
         step_one_lb.pack(pady=10)
 
         balancing_frame = tk.Frame(self.scroll_frame, bg='white') 
-        self.show_equation_balance(balancing_frame, eq.get_reactants(), 'r')
-        self.show_equation_balance(balancing_frame, eq.get_products(), 'p')
         balancing_frame.pack()
+
+        equation_list = self.reactants + ["->"] + self.products 
+        # holds all entries that contain coefficients 
+        column = 0
+        # displays the equation with entries next to each compound to enter the coefficients
+        for compound in equation_list:
+            if compound == "->":
+                yield_sign = tk.Label(balancing_frame, height=2, bg='white', text="->", font=('Helvetica', 30))
+                yield_sign.grid(row=0, column=column)
+                column += 1 
+                continue 
+            # The box where you place coefficients to balance the equation 
+            entry_box = tk.Entry(balancing_frame, width=2, bg='white', font=('Helvetica', 20), validate='all', validatecommand=self.vcmd)
+            self.balance_entries[compound]= (entry_box)
+            entry_box.bind("<Return>", self.check_balance)
+            format_comp = format_subscripts(compound)
+
+            entry_box.grid(row=0,column=column)
+            column += 1
+            compound_lb = tk.Label(balancing_frame, height=2, bg='white', text=format_comp, font=('Helvetica', 30))
+            compound_lb.grid(row=0, column=column)
+            column += 1
+ 
+        help_button = tk.Button(balancing_frame, height=2, bg='white', text="Help Me") 
+        help_button.configure(command=lambda: self.balance_equation(help_button))
+        help_button.grid(row=0, column=column)
+
+
 
