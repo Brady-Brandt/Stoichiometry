@@ -37,7 +37,6 @@ def format_subscripts(string):
             new_string += subscripts[char]
         else:
             new_string += char
-
     return new_string
 
 
@@ -56,7 +55,6 @@ def parse_equation(eq):
     if len(eq) == 2:
         reactants = eq[0].split('+')
         products = eq[1].split('+')     
-        print(reactants, products, sep=", ")
         return ChemicalEquation(reactants, products)
     return None
 
