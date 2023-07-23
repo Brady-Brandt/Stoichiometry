@@ -19,7 +19,6 @@ class Practice:
         self.canvas.bind('<Configure>', self.configure_canvas)
         self.canvas.configure(yscrollcommand=self.scrollbar.set)
         self.canvas.config(scrollregion=self.canvas.bbox("all")) 
-
         self.window = self.canvas.create_window((0,0), width=self.canvas["width"], window=self.scroll_frame, anchor='nw')
         self.canvas.pack()
 
@@ -79,9 +78,9 @@ class Practice:
         self.canvas.configure(scrollregion=self.canvas.bbox("all"), width=self.screen.winfo_width(), height=self.screen.winfo_height())
 
     def configure_canvas(self, event):
-        if self.canvas.winfo_width() != self.screen.winfo_width():
-            self.canvas["width"] = self.screen.winfo_width()
-            self.canvas.itemconfig(self.window, width=self.canvas["width"])
+        #if self.canvas.winfo_width() != self.screen.winfo_width():
+            #self.canvas["width"] = str(self.screen.winfo_width() - 100)
+            #self.canvas.itemconfig(self.window, width=self.canvas["width"])
         if self.canvas.winfo_height() != self.screen.winfo_height():
             self.canvas["height"] = self.screen.winfo_height()
 
@@ -452,7 +451,7 @@ class Practice:
         else:
             self.grams = self.amount
 
-        problem_str = f"How many {self.first_unit} of {self.format_first_comp} {which_reaction} {self.amount} {self.second_unit} of {self.format_second_comp}"
+        problem_str = f"How many {self.first_unit} of {self.format_first_comp}\n{which_reaction} {self.amount} {self.second_unit} of {self.format_second_comp}"
         self.show_practice_widgets(problem_str)
 
     def check_options(self):
@@ -475,7 +474,7 @@ class Practice:
                 self.amount = float(self.amount_entry.get())
                 self.format_first_comp = format_subscripts(self.first_compound)
                 self.format_second_comp = format_subscripts(self.second_compound)
-                problem_str = f"How many {self.first_unit} of {self.format_first_comp} do I need to produce {self.amount} {self.second_unit} of {self.format_second_comp}"
+                problem_str = f"How many {self.first_unit} of {self.format_first_comp}\ndo I need to produce {self.amount} {self.second_unit} of {self.format_second_comp}"
                 self.show_practice_widgets(problem_str)
 
 
@@ -544,7 +543,7 @@ class Practice:
 
 
     def setup_help(self):
-        dir_label = tk.Label(self.scroll_frame,bg='white', text="Enter a chemical reaction in the form: Mg(OH)2 = (MgOH)2O + H20\n Do not enter the physical state for example F(s)", font=self.font25)
+        dir_label = tk.Label(self.scroll_frame,bg='white', text="Enter a chemical reaction in the form: Mg(OH)2 = (MgOH)2O + H20\n Do not enter the physical state for example F(s)", font=('Helvetica', 20))
         self.equation_entry = tk.Entry(self.scroll_frame, bg='white', width=50, font=('Helvetica', 20))
         self.equation_entry_button = tk.Button(self.scroll_frame, height=3, text="Enter", command = self.set_problem)
 
@@ -553,8 +552,8 @@ class Practice:
         self.equation_entry_button.pack()
 
     def show_practice_widgets(self, problem_str):
-        problem_lb = tk.Label(self.scroll_frame, bg='white', text=problem_str, anchor='center', height=1, font=('Helvetica', 18))
-        step_one_lb = tk.Label(self.scroll_frame, bg='white', text="Balance the Equation", anchor='center', font=self.font25)
+        problem_lb = tk.Label(self.scroll_frame, bg='white',text=problem_str,  height=2, font=('Helvetica', 18))
+        step_one_lb = tk.Label(self.scroll_frame, bg='white', text="Balance the Equation", font=self.font25)
         problem_lb.pack(pady=20)
         step_one_lb.pack(pady=10)
 
