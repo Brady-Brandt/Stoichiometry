@@ -125,13 +125,13 @@ class Practice:
                 expected_prod = self.elements[element] * self.user_inputted_mass[element]
                 if percent_error(product, expected_prod) < self.tolerance:
                     self.user_inputted_multiply_mass[element] = product
-                    # set the bg to blue to check if it has been disabled by the 
+                    # set the bg to green to check if it has been disabled by the
                     # user inputting a correct value
                     entry.configure(state='disabled', bg='green')
                     count += 1
                 else:
                     entry.configure(bg='red')
-        if count == len(self.molar_mass_entries) - 1:
+        if count == len(self.molar_mass_entries):
             total_molar_mass_entry.configure(state='normal')
 
     
